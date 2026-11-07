@@ -1,0 +1,20 @@
+[Unit]
+Description=Triagem IA - analise de alertas do Zabbix
+After=network-online.target zabbix-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zabbix
+Group=zabbix
+ExecStart=/opt/triage/venv/bin/python /opt/triage/triage.py worker
+Restart=on-failure
+RestartSec=30
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/spool/triage /var/log/triage
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

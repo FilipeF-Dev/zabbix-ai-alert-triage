@@ -1,0 +1,12 @@
+# nunca versionar configuracao com valores
+triage.conf
+*.conf
+!triage.conf.example
+# resultados de teste com dados reais
+teste-*.md
+regras*.md
+*.jsonl
+__pycache__/
+*.pyc
+.venv/
+venv/

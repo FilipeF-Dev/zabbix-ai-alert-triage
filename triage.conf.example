@@ -1,0 +1,55 @@
+# /etc/triage/triage.conf
+# Dono zabbix, permissao 600: guarda chave e senha. NUNCA versionar com valores.
+
+[geral]
+base = /opt/triage/BASE-CONHECIMENTO.md
+fila = /var/spool/triage
+log = /var/log/triage
+# teto de analises por dia (protege a fatura numa enxurrada).
+# 5 enquanto o credito for de US$ 5 ; subir quando houver saldo.
+max_por_dia = 5
+# mesmo gatilho analisado ha menos de N horas: nao analisa de novo
+repetido_horas = 6
+# um fato costuma gerar varios alertas juntos (ex.: 5 servicos do antivirus).
+# analisa 1 vez por host em M min
+mesmo_host_minutos = 15
+
+# --- O QUE NAO ANALISAR (06/11/2026). Ignorado nao custa nada e vai ao log
+# com o motivo (/var/log/triage/triage-AAAAMM.jsonl, campo "ignorado").
+# Regra 1: espera antes de analisar; se o problema voltou sozinho nesse
+# tempo, nao analisa. Media espera mais (Bitdefender volta em 4-15 min;
+# o EPUpdateService e o ultimo, medido em 06/11/2026).
+espera_media_segundos = 1200
+espera_alta_segundos = 120
+# Regra 2: evento de massa (energia, rede geral): N hosts com problema em
+# +-M minutos -> nao analisa nenhum. 0 desliga a regra.
+massa_hosts = 3
+massa_minutos = 5
+# Regra 3: nomes de alerta que nao se analisam (expressao regular).
+# nobreak/energia e temperatura da sala: a acao e fisica, nao ha o que analisar.
+# Acrescente aqui o ruido do seu ambiente (ex.: |^Interface VPN-TERCEIRO).
+ignorar_nomes = (?i)nobreak|energia|^Sala dos servidores
+# Regra 4: hosts que nao se analisam (separados por virgula). O proprio
+# Zabbix: o Triagem IA roda na mesma VM.
+ignorar_hosts = Zabbix server
+
+[zabbix]
+url = http://127.0.0.1:8080/api_jsonrpc.php
+# token do usuario de servico triage (so leitura) - guardar no cofre de senhas
+token = COLE_AQUI
+
+[anthropic]
+# chave criada no console.anthropic.com, com teto mensal - guardar no cofre de senhas
+chave = COLE_AQUI
+# modelo: sonnet (padrao), opus ou haiku. Sonnet escolhido na comparacao as
+# cegas de 06/11/2026 (teste-triage-notas.md). Para trocar, descomente:
+# modelo = sonnet
+
+[smtp]
+servidor = smtp.example.com
+porta = 465
+usuario = alertas@example.com
+senha = COLE_AQUI
+remetente = alertas@example.com
+# no comeco, um destinatario so, ate as analises se provarem uteis
+para = ti@example.com
